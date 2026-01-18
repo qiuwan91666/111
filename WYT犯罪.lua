@@ -176,11 +176,11 @@ Window:Tag({
 
 -- 创建标签页
 local Tabs = {
-    World = Window:Section({ Title = "世界功能", Icon = "globe" ,Opened = true }),
-    Player = Window:Section({ Title = "玩家功能", Icon = "user" ,Opened = false }),
-    Combat = Window:Section({ Title = "战斗功能", Icon = "target" ,Opened = false }),
-    Visual = Window:Section({ Title = "视觉功能", Icon = "eye" ,Opened = false }),
-    Misc = Window:Section({ Title = "其他功能", Icon = "settings" ,Opened = false })
+    World = Window:Section({ Title = "世界功能", Icon = "globe" ,Icon = true }),
+    Player = Window:Section({ Title = "玩家功能", Icon = "user" ,Icon = false }),
+    Combat = Window:Section({ Title = "战斗功能", Icon = "target" ,Icon = false }),
+    Visual = Window:Section({ Title = "视觉功能", Icon = "eye" ,Icon = false }),
+    Misc = Window:Section({ Title = "其他功能", Icon = "settings" ,Icon = false })
 }
 
 -- 世界功能
