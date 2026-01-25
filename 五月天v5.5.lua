@@ -1,3 +1,4 @@
+--死孩子深仇曹死你妈傻子逼死妈孩子你妈死了骚逼你爸死了可怜孩子小傻逼老傻子狗东西狗儿子叫你主人来你主人呢你妈那个骚逼你妈死了你妈妈被我操了你妈没了傻逼东西我操死你吗去你麻痹SB孩子深仇我操你妈哈哈哈哈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈
 local Parke3 = 'rbxassetid://139596311015842'
 game:GetService("StarterGui"):SetCore("SendNotification",{ 
     Title = "神秘保护中...", 
@@ -390,7 +391,7 @@ Window:EditOpenButton({
     Draggable = true,
 })
 Window:Tag({
-    Title = "v5.5",
+    Title = "v6",
     Color = Color3.fromHex("#30ff6a")
 })
 Window:Tag({
@@ -3150,6 +3151,547 @@ TabHandles.MiscTab:Button({
 })
 
 TabHandles.MiscTab:Button({
+    Title = "停电复兴脚本",
+    Description = "停电复兴游戏脚本",
+    Callback = function()
+        local lastPromptedContainer = nil
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local LootEvent = ReplicatedStorage:WaitForChild("Events").Loot.LootObject
+local MinigameEvent = ReplicatedStorage:WaitForChild("Events").Loot.MinigameResult
+local UpdateStates = ReplicatedStorage:WaitForChild("Events").Player.UpdateStates
+local StaminaRemote = ReplicatedStorage:WaitForChild("Events").Player.Stamina
+local CameraShakeEvent = ReplicatedStorage:WaitForChild("Events").Player.CameraShake
+local lootFolder = workspace:WaitForChild("Map").Loot
+local NPCFolder = workspace:WaitForChild("NPCs").Custom
+local validContainers = {
+	["DuffelBag"] = true,
+	["Case"] = true,
+	["BunkerCrate"] = true,
+	["CashRegister"] = true,
+	["Locker"] = true,
+	["MedBox"] = true,
+	["Safe"] = true
+}
+local screenGui = Instance.new("ScreenGui", playerGui)
+screenGui.Name = "AutoSystemUI"
+screenGui.ResetOnSpawn = false
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 200, 0, 400)
+frame.Position = UDim2.new(0, 10, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 4)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = frame
+local function createEvenFrame(parent, height)
+	local f = Instance.new("Frame")
+	f.Size = UDim2.new(1, -0, -0, height)
+	f.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	f.BorderSizePixel = 0
+	Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6)
+	f.Parent = parent
+	return f
+end
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+local speedValue = 16
+local speedSetByUser = false
+local speedFrame = createEvenFrame(frame, 36)
+speedFrame.LayoutOrder = 99
+local speedLabel = Instance.new("TextLabel", speedFrame)
+speedLabel.Size = UDim2.new(1, 0, 0, 14)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextSize = 11
+speedLabel.Text = "WalkSpeed"
+speedLabel.Position = UDim2.new(0, 0, 0, 0)
+local speedBox = Instance.new("TextBox", speedFrame)
+speedBox.Size = UDim2.new(1, -12, 0, 16)
+speedBox.Position = UDim2.new(0, 6, 0, 16)
+speedBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedBox.Font = Enum.Font.Gotham
+speedBox.TextSize = 11
+speedBox.Text = tostring(speedValue)
+Instance.new("UICorner", speedBox).CornerRadius = UDim.new(0, 4)
+speedBox.FocusLost:Connect(function(enter)
+	local val = tonumber(speedBox.Text)
+	if val and val > 0 then
+		speedValue = val
+		speedSetByUser = true
+		if humanoid then humanoid.WalkSpeed = speedValue end
+		speedBox.Text = tostring(speedValue)
+	else
+		speedBox.Text = tostring(speedValue)
+	end
+end)
+RunService.RenderStepped:Connect(function()
+	humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if speedSetByUser and humanoid and humanoid.WalkSpeed ~= speedValue then
+		humanoid.WalkSpeed = speedValue
+	end
+end)
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 22)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 13
+title.Text = "Blackout: Revival"
+local toggleUIRefs = {}
+local function createToggle(name, callback)
+	local buttonFrame = createEvenFrame(frame, 22)
+	buttonFrame.LayoutOrder = 0
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, 0, 1, 0)
+	button.BackgroundTransparency = 1
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.Font = Enum.Font.GothamBold
+	button.TextSize = 11
+	button.Text = name .. ": OFF"
+	button.Parent = buttonFrame
+	local state = false
+	button.MouseButton1Click:Connect(function()
+		state = not state
+		button.Text = name .. ": " .. (state and "ON" or "OFF")
+		buttonFrame.BackgroundColor3 = state and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+		callback(state)
+	end)
+	   toggleUIRefs[name] = {button = button, frame = buttonFrame, setState = function(val)
+		state = val
+		button.Text = name .. ": " .. (state and "ON" or "OFF")
+		buttonFrame.BackgroundColor3 = state and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+	end}
+	return function(val)
+		state = val
+		button.Text = name .. ": " .. (state and "ON" or "OFF")
+		buttonFrame.BackgroundColor3 = state and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+		callback(state)
+	end
+end
+local autoLootEnabled, autoWinEnabled, hitboxEnabled, proximityEnabled = false, false, false, false
+local infJump = false
+local noCamShakeEnabled, noRagdollEnabled, noFallDamageEnabled, spoofStatesEnabled, infStaminaEnabled = false, false, false, false, false
+local gunModEnabled = false
+local toggleSetters = {}
+local function addToggle(name, setter)
+	   local set = createToggle(name, setter)
+	   table.insert(toggleSetters, set)
+end
+addToggle("Auto Loot", function(state) autoLootEnabled = state end)
+addToggle("Auto Lockpick", function(state) autoWinEnabled = state end)
+addToggle("Hitbox", function(state) hitboxEnabled = state end)
+addToggle("Instant Interact", function(state) proximityEnabled = state end)
+addToggle("No Camera Shake", function(state)
+	noCamShakeEnabled = state
+	if state and not _G.noCamShakeHook then
+		_G.noCamShakeHook = hookmetamethod(game, "__namecall", function(self, ...)
+			local method = getnamecallmethod()
+			if method == "InvokeClient" and tostring(self) == "CameraShake" then
+				return 
+			end
+			return _G.noCamShakeHook(self, ...)
+		end)
+	end
+end)
+addToggle("Infinite Jump", function(state)
+infJump = state
+if not state and _G.infJumpConn then
+	_G.infJumpConn:Disconnect()
+	_G.infJumpConn = nil
+end
+end)
+addToggle("No Ragdoll", function(state)
+	noRagdollEnabled = state
+	if state and not noRagdollHook then
+		noRagdollHook = hookmetamethod(game, "__namecall", function(self, ...)
+			local method = getnamecallmethod()
+			if method == "FireServer" and tostring(self) == "Ragdoll" then
+				return
+			end
+			return noRagdollHook(self, ...)
+		end)
+	end
+end)
+addToggle("No Fall Damage", function(state)
+	noFallDamageEnabled = state
+	if state and not noFallDamageHook then
+		noFallDamageHook = hookmetamethod(game, "__namecall", function(self, ...)
+			local method = getnamecallmethod()
+			if method == "FireServer" and tostring(self) == "Damage" then
+				return
+			end
+			return noFallDamageHook(self, ...)
+		end)
+	end
+end)
+addToggle("Spoof Movement States", function(state)
+spoofStatesEnabled = state
+if state then
+	if not _G.spoofStatesConn then
+		_G.spoofStatesConn = RunService.RenderStepped:Connect(function()
+			if not spoofStatesEnabled then return end
+						local character = player.Character
+			if not character then return end
+			local root = character:FindFirstChild("HumanoidRootPart")
+			if not root then return end
+			UpdateStates:FireServer(root.Position, root.Velocity, root.CFrame.LookVector, {
+				Crouching = false,
+				Sprinting = false,
+				Aiming = false
+			})
+		end)
+	end
+else
+	if _G.spoofStatesConn then
+		_G.spoofStatesConn:Disconnect()
+		_G.spoofStatesConn = nil
+	end
+end
+end)
+addToggle("Infinite Stamina", function(state)
+	infStaminaEnabled = state
+	if state then
+		local oldNamecall
+		oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+			if self == StaminaRemote and getnamecallmethod() == "FireServer" then
+				return nil
+			end
+			return oldNamecall(self, ...)
+		end)
+	end
+end)
+function setGunMod(val)
+	gunModEnabled = val
+	if gunModButton then
+		gunModButton.Text = "Toggle Gun Mods: " .. (gunModEnabled and "ON" or "OFF")
+		gunModButton.BackgroundColor3 = gunModEnabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+	end
+
+	local patched = false
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj.Name == "Settings" and obj:IsA("ModuleScript") then
+			local success, settings = pcall(require, obj)
+			if success and typeof(settings) == "table" and settings.Firing and settings.Modes then
+				local ok = pcall(patchGun, settings)
+				if ok then patched = true end
+			end
+		end
+	end
+
+	if getgc then
+		for _, v in next, getgc(true) do
+			if typeof(v) == "table" and rawget(v, "Firing") and rawget(v, "Modes") then
+				local ok = pcall(patchGun, v)
+				if ok then patched = true end
+			end
+		end
+	end
+	local vm = workspace:FindFirstChild("Camera")
+	if vm and vm:FindFirstChild("ViewModel") and vm.ViewModel:FindFirstChild("Settings") then
+		local settings = vm.ViewModel.Settings
+		if typeof(settings) == "table" and settings.Firing then
+			local ok = pcall(patchGun, settings)
+			if ok then patched = true end
+		end
+	end
+
+	if not patched and player.Character then
+		for _, tool in ipairs(player.Character:GetChildren()) do
+			if tool:IsA("Tool") and tool:FindFirstChild("Settings") then
+				local settings = tool.Settings
+				if typeof(settings) == "table" and settings.Firing and settings.Modes then
+					pcall(patchGun, settings)
+				end
+			end
+		end
+	end
+end
+
+
+do
+   local buttonFrame = createEvenFrame(frame, 22)
+   buttonFrame.LayoutOrder = -100
+   local button = Instance.new("TextButton")
+   button.Size = UDim2.new(1, 0, 1, 0)
+   button.BackgroundTransparency = 1
+   button.TextColor3 = Color3.fromRGB(255, 255, 255)
+   button.Font = Enum.Font.GothamBold
+   button.TextSize = 11
+   button.Text = "Enable All: OFF"
+   button.Parent = buttonFrame
+   local state = false
+   button.MouseButton1Click:Connect(function()
+		   state = not state
+		   button.Text = "Enable All: " .. (state and "ON" or "OFF")
+		   buttonFrame.BackgroundColor3 = state and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(40, 40, 40)
+		   for _, setter in ipairs(toggleSetters) do
+				   setter(state)
+		   end
+		   for name, ref in pairs(toggleUIRefs) do
+				   ref.setState(state)
+		   end
+
+		   if not state then
+				   for _, setter in ipairs(toggleSetters) do
+						   setter(false)
+				   end
+				   for name, ref in pairs(toggleUIRefs) do
+						   ref.setState(false)
+				   end
+				   if gunModButton then
+						   setGunMod(false)
+				   end
+
+				   for _, obj in ipairs(getgc and getgc(true) or {}) do
+					   if typeof(obj) == "table" and rawget(obj, "Enabled") ~= nil then
+						   pcall(function() obj.Enabled = false end)
+					   end
+				   end
+				   for _, v in ipairs(workspace:GetDescendants()) do
+					   if v:IsA("Script") or v:IsA("LocalScript") then
+						   pcall(function() v.Enabled = false end)
+					   end
+				   end
+		   end
+   end)
+end
+game:GetService("UserInputService").JumpRequest:Connect(function()
+if not _G.infJumpConn then
+	_G.infJumpConn = game:GetService("UserInputService").JumpRequest:Connect(function()
+		if infJump then
+			local char = player.Character
+			local hum = char and char:FindFirstChildWhichIsA("Humanoid")
+			if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+		end
+	end)
+end
+end)
+local gunModEnabled = false
+local rpmValue = 9999
+local rpmSetByUser = false
+local gunModFrame = Instance.new("Frame", frame)
+gunModFrame.Size = UDim2.new(1, -12, 0, 36)
+gunModFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+gunModFrame.BorderSizePixel = 0
+gunModFrame.LayoutOrder = 100
+Instance.new("UICorner", gunModFrame).CornerRadius = UDim.new(0, 6)
+local gunModLabel = Instance.new("TextLabel", gunModFrame)
+gunModLabel.Size = UDim2.new(1, 0, 0, 14)
+gunModLabel.BackgroundTransparency = 1
+gunModLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+gunModLabel.Font = Enum.Font.GothamBold
+gunModLabel.TextSize = 11
+gunModLabel.Text = "Gun Mods"
+gunModLabel.Position = UDim2.new(0, 0, 0, 0)
+gunModFrame.Parent = frame
+local rpmBox = Instance.new("TextBox", gunModFrame)
+rpmBox.Size = UDim2.new(0.7, 0, 0, 14)
+rpmBox.Position = UDim2.new(0, 6, 0, 16)
+rpmBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+rpmBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+rpmBox.Font = Enum.Font.Gotham
+rpmBox.TextSize = 11
+rpmBox.Text = tostring(rpmValue)
+Instance.new("UICorner", rpmBox).CornerRadius = UDim.new(0, 4)
+rpmBox.FocusLost:Connect(function(enter)
+	local val = tonumber(rpmBox.Text)
+	if val and val > 0 then
+		rpmValue = val
+		rpmSetByUser = true
+		rpmBox.Text = tostring(rpmValue)
+	else
+		rpmBox.Text = tostring(rpmValue)
+	end
+end)
+local rpmLabel = Instance.new("TextLabel", gunModFrame)
+rpmLabel.Size = UDim2.new(0.3, -12, 0, 14)
+rpmLabel.Position = UDim2.new(0.7, 6, 0, 16)
+rpmLabel.BackgroundTransparency = 1
+rpmLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+rpmLabel.Font = Enum.Font.Gotham
+rpmLabel.TextSize = 11
+rpmLabel.Text = "RPM"
+rpmLabel.TextXAlignment = Enum.TextXAlignment.Left
+gunModButton = Instance.new("TextButton", gunModFrame)
+gunModButton.Size = UDim2.new(1, -12, 0, 14)
+
+gunModButton.Position = UDim2.new(0, 6, 0, 30)
+gunModButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+gunModButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+gunModButton.Font = Enum.Font.GothamBold
+gunModButton.TextSize = 11
+gunModButton.Text = "Toggle Gun Mods: OFF"
+Instance.new("UICorner", gunModButton).CornerRadius = UDim.new(0, 4)
+gunModButton.MouseButton1Click:Connect(function()
+gunModEnabled = not gunModEnabled
+setGunMod(gunModEnabled)
+end)
+local function patchGun(settings)
+	if typeof(settings) ~= "table" then return end
+	if not settings.Firing or not settings.Modes then return end
+	settings.Firing.Recoil = NumberRange.new(0, 0)
+	settings.Firing.Kickback = 0
+	settings.Firing.AimedKickback = 0
+	settings.Firing.Spread = 0
+	settings.Firing.AimedSpread = 0
+	settings.Firing.Velocity = 9999
+	settings.Firing.MaxRange = 99999
+	settings.Firing.Penetration = 99999
+	settings.Firing.PierceAmount = 9999
+	settings.Firing.PierceSize = 9999
+	settings.Firing.Shake = 0
+	settings.Firing.ReloadingMovementSpeed = 1
+	settings.Firing.AimingMovementSpeed = 1
+	settings.Firing.DamageDropOff = NumberRange.new(0, 0)
+	settings.Firing.DropOffModifier = 0
+	local mode = settings.Modes[1]
+	if mode and rpmSetByUser then
+		mode.Automatic = true
+		mode.RPM = rpmValue
+	end
+end
+task.spawn(function()
+	while true do
+		if gunModEnabled then
+			for _, v in next, getgc and getgc(true) or {} do
+				if typeof(v) == "table" and rawget(v, "Firing") and rawget(v, "Modes") then
+					pcall(patchGun, v)
+				end
+			end
+		end
+		task.wait(0.5)
+	end
+end)
+task.spawn(function()
+	while true do
+		if gunModEnabled then
+			local vm = workspace:FindFirstChild("Camera")
+			if vm and vm:FindFirstChild("ViewModel") and vm.ViewModel:FindFirstChild("Settings") then
+				local settings = vm.ViewModel.Settings
+				if typeof(settings) == "table" and settings.Firing then
+					pcall(patchGun, settings)
+				end
+			end
+		end
+		task.wait(0.5)
+	end
+end)
+workspace.DescendantAdded:Connect(function(desc)
+	if desc:IsA("ProximityPrompt") then
+		desc.PromptButtonHoldBegan:Connect(function()
+			if proximityEnabled and desc.HoldDuration > 0 then
+				fireproximityprompt(desc, 0)
+			end
+		end)
+	end
+end)
+for _, prompt in pairs(workspace:GetDescendants()) do
+	if prompt:IsA("ProximityPrompt") then
+		prompt.PromptButtonHoldBegan:Connect(function()
+			if proximityEnabled and prompt.HoldDuration > 0 then
+				fireproximityprompt(prompt, 0)
+			end
+		end)
+		prompt.Triggered:Connect(function(player)
+
+			local container = prompt:FindFirstAncestorWhichIsA("Model")
+			if container and validContainers[container.Name] then
+				lastPromptedContainer = container
+			end
+		end)
+	end
+end
+task.spawn(function()
+	local lastLootTime, lastWinTime = {}, {}
+	local hbx, hby, hbz = 6, 6, 6
+	local connected = {}
+while task.wait(0.5) do
+	local containers = {}
+	for _, c in ipairs(lootFolder:GetChildren()) do
+		if validContainers[c.Name] then table.insert(containers, c) end
+	end
+	local drop = workspace:FindFirstChild("Debris") and workspace.Debris:FindFirstChild("Airdrop")
+	if drop and drop:FindFirstChild("Drop") and drop.Drop:FindFirstChild("Crate") then
+		table.insert(containers, drop.Drop.Crate)
+	end
+	for _, container in ipairs(containers) do
+		local lootBase = container:FindFirstChild("LootBase")
+		local lootTable = lootBase and lootBase:FindFirstChild("LootTable")
+		if autoLootEnabled and lootTable and #lootTable:GetChildren() > 0 then
+
+			if lastPromptedContainer == container then
+			   lastPromptedContainer = nil
+				if not lastLootTime[container] or tick() - lastLootTime[container] > 2 then
+					lastLootTime[container] = tick()
+					coroutine.wrap(function()
+						pcall(function()
+							pcall(function() LootEvent:FireServer(lootTable, "Cash") end)
+							task.wait(0.5)
+							pcall(function() LootEvent:FireServer(lootTable, "Valuables") end)
+							task.wait(0.5)
+							local cashAttr = lootTable:GetAttribute("Cash")
+							local valAttr = lootTable:GetAttribute("Valuables")
+							if (not cashAttr or cashAttr == 0) and (not valAttr or valAttr == 0) then
+								local lootChildren = lootTable:GetChildren()
+								for _, item in ipairs(lootChildren) do
+									if item:IsA("ValueBase") and item.Name ~= "Cash" and item.Name ~= "Valuables" then
+										pcall(function()
+											LootEvent:FireServer(lootTable, item, true)
+										end)
+										task.wait(0.5)
+									end
+								end
+							end
+						end)
+					end)()
+				end
+			end
+		end
+			if autoWinEnabled then
+				local now = tick()
+				if not lastWinTime[container] or now - lastWinTime[container] > 1 then
+					MinigameEvent:FireServer(container, true)
+					lastWinTime[container] = now
+				end
+			end
+		end
+		if hitboxEnabled then
+			for _, model in ipairs(NPCFolder:GetDescendants()) do
+				pcall(function()
+					if model:IsA("Model") then
+						local humanoid = model:FindFirstChildOfClass("Humanoid")
+						local head = model:FindFirstChild("Head")
+						if model == player.Character then return end
+						if head and humanoid and humanoid.Health > 0 then
+							head.Size = Vector3.new(hbx, hby, hbz)
+							head.Transparency = 0.5
+							head.CanCollide = false
+							if not connected[humanoid] then
+								connected[humanoid] = true
+								humanoid.Died:Connect(function()
+									head.Size = Vector3.new(2, 1, 1)
+									head.Transparency = 0
+									head.CanCollide = false
+							end)
+							end
+						end
+					end
+				end)
+			end
+		end
+	end
+end)
+
+TabHandles.MiscTab:Button({
     Title = "赛马娘脚本",
     Description = "联邦",
     Callback = function()
@@ -3390,6 +3932,1176 @@ TabHandles.MiscTab:Button({
         loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/51246f83a9c77b825354d5d151c63c50.lua"))()
     end
 })
+
+TabHandles.MiscTab:Button({
+    Title = "被遗忘脚本",
+    Description = "傻逼游戏脚本",
+    Callback = function()
+    local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
+
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalizationService = game:GetService("LocalizationService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextChatService = game:GetService("TextChatService")
+local CoreGui = game:GetService("CoreGui")
+
+local ClonedRunService = cloneref(RunService)
+local ClonedUserInputService = cloneref(UserInputService)
+local ClonedTweenService = cloneref(TweenService)
+local ClonedLocalizationService = cloneref(LocalizationService)
+local ClonedHttpService = cloneref(HttpService)
+local ClonedPlayers = cloneref(Players)
+local ClonedCoreGui = cloneref(CoreGui)
+local ClonedWorkspace = cloneref(Workspace)
+
+local LocalPlayer = Players.LocalPlayer
+
+local SystemLanguage = string.match(LocalizationService.SystemLocaleId, "^[a-z]+")
+
+local ESPSettings = {
+    FillTransparency = 0.5,
+    OutlineTransparency = 0,
+    ColaESP = false,
+    MedkitESP = false,
+    PizzaESP = false,
+    GeneratorESP = false,
+    FakeGeneratorESP = false,
+    SurvivorESP = false,
+    KillerESP = false,
+    KidCloneESP = false,
+    OneByOneCloneESP = false,
+    Agent007CloneESP = false
+}
+
+local AutoRepairSettings = {
+    Enabled = false,
+    Interval = 1,
+    TeleportRepair = false
+}
+
+local UIFolder = Instance.new("Folder")
+UIFolder.Parent = Workspace.CurrentCamera
+
+if syn and syn.protect_gui then
+    syn.protect_gui(UIFolder)
+elseif protectgui then
+    protectgui(UIFolder)
+end
+
+local HiddenUI = nil
+if gethui then
+    HiddenUI = gethui()
+end
+
+WindUI:Popup({
+    Title = "不知道",
+    Content = "随便找的",
+    Icon = "box",
+    Buttons = {
+        {
+            Title = "开始使用",
+            Icon = "arrow-right",
+            Variant = "Primary",
+            Callback = function()
+            end
+        }
+    }
+})
+
+local Window = WindUI:CreateWindow({
+    Title = "被遗弃",
+    Icon = "star",
+    Author = "By 不知道",
+    Folder = "BigWave",
+    Size = UDim2.fromOffset(580, 490),
+    Acrylic = true,
+    Theme = "Dark",
+    SideBarWidth = 200,
+    HideSearchBar = false,
+    User = {
+        Enabled = true,
+        Anonymous = false,
+        Callback = function()
+            WindUI:Notify({
+                Title = "用户资料",
+                Content = "点击了用户资料!",
+                Duration = 3
+            })
+        end
+    }
+})
+
+Window:EditOpenButton({
+    Title = "BIGWAVE",
+    StrokeThickness = 2,
+    Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromHex("FF0000")),
+        ColorSequenceKeypoint.new(0.16, Color3.fromHex("FF7F00")),
+        ColorSequenceKeypoint.new(0.33, Color3.fromHex("FFFF00")),
+        ColorSequenceKeypoint.new(0.5, Color3.fromHex("00FF00")),
+        ColorSequenceKeypoint.new(0.66, Color3.fromHex("0000FF")),
+        ColorSequenceKeypoint.new(0.83, Color3.fromHex("4B0082")),
+        ColorSequenceKeypoint.new(1, Color3.fromHex("9400D3"))
+    })
+})
+
+local MainSection = Window:Section({
+    Title = "主要功能",
+    Opened = true
+})
+
+local PlayerSection = Window:Section({
+    Title = "玩家",
+    Icon = "user",
+    Opened = false
+})
+
+local ESPSection = Window:Section({
+    Title = "透视",
+    Icon = "eye",
+    Opened = false
+})
+
+local GeneratorSection = Window:Section({
+    Title = "发电机",
+    Icon = "circuit-board",
+    Opened = false
+})
+
+local PlayerTab = PlayerSection:Tab({
+    Title = "玩家",
+    Icon = "folder"
+})
+
+local StaminaTab = PlayerSection:Tab({
+    Title = "体力",
+    Icon = "folder"
+})
+
+PlayerTab:Section({
+    Title = "基础玩家设置",
+    Icon = "user",
+    Desc = "玩家",
+    ImageSize = 30,
+    Opened = true
+})
+
+PlayerTab:Slider({
+    Title = "玩家走路速度",
+    Desc = "速度",
+    Step = 1,
+    Value = {
+        Min = 16,
+        Max = 300,
+        Default = 16
+    },
+    Callback = function(value)
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.WalkSpeed = value
+            end
+        end
+            end
+})
+
+PlayerTab:Slider({
+    Title = "玩家FOV",
+    Desc = "视野距离",
+    Step = 1,
+    Value = {
+        Min = 70,
+        Max = 120,
+        Default = 70
+    },
+    Callback = function(value)
+        Workspace.CurrentCamera.FieldOfView = value
+    end
+})
+
+PlayerTab:Toggle({
+    Title = "高亮",
+    Desc = "高亮环境",
+    Value = false,
+    Callback = function(value)
+        if value then
+            Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+            Lighting.Brightness = 2
+            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+            Lighting.ClockTime = 12
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+        else
+            Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+            Lighting.Brightness = 1
+            Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            Lighting.GlobalShadows = true
+        end
+    end
+})
+
+PlayerTab:Toggle({
+    Title = "去除雾",
+    Desc = "去除",
+    Value = false,
+    Callback = function(value)
+        local atmosphere = Lighting:FindFirstChild("Atmosphere")
+        if atmosphere then
+            if value then
+                atmosphere.Density = 0
+                atmosphere.Offset = 0
+                atmosphere.Decay = Color3.fromRGB(255, 255, 255)
+            else
+                atmosphere.Density = 0.3
+            end
+        end
+        
+        local fog = Lighting:FindFirstChild("Fog")
+        if fog then
+            fog.Enabled = not value
+        end
+        
+        local blur = Lighting:FindFirstChild("Blur")
+        if blur then
+            blur.Enabled = not value
+        end
+        
+        if value then
+            Lighting.FogStart = 0
+            Lighting.FogEnd = 100000000
+        else
+            Lighting.FogEnd = 1000
+        end
+    end
+})
+
+PlayerTab:Section({
+    Title = "其他玩家设置",
+    Icon = "user",
+    Desc = "玩家",
+    ImageSize = 30,
+    Opened = true
+})
+
+PlayerTab:Toggle({
+    Title = "显示对话框",
+    Desc = "显示",
+    Value = true,
+    Callback = function(value)
+        TextChatService.ChatWindowConfiguration.Enabled = value
+    end
+})
+
+StaminaTab:Section({
+    Title = "体力设置",
+    Icon = "footprints",
+    Desc = "体力",
+    ImageSize = 30,
+    Opened = true
+})
+
+local SprintingModule = nil
+local Systems = ReplicatedStorage:FindFirstChild("Systems")
+if Systems then
+    local Character = Systems:FindFirstChild("Character")
+    if Character then
+        local Game = Character:FindFirstChild("Game")
+        if Game then
+            local Sprinting = Game:FindFirstChild("Sprinting")
+            if Sprinting then
+                local success, result = pcall(function()
+                    return require(Sprinting)
+                end)
+                if success then
+                    SprintingModule = result
+                end
+            end
+        end
+    end
+end
+
+StaminaTab:Toggle({
+    Title = "无限体力",
+    Desc = "无限",
+    Value = false,
+    Callback = function(value)
+        if SprintingModule then
+            SprintingModule.StaminaLossDisabled = value
+            if value then
+                SprintingModule.Stamina = SprintingModule.MaxStamina or 100
+            end
+        end
+    end
+})
+
+StaminaTab:Divider()
+
+StaminaTab:Input({
+    Title = "输入最大体力值",
+    Desc = "输入",
+    Value = "100",
+    Callback = function(value)
+        local number = tonumber(value)
+        if number and SprintingModule then
+            SprintingModule.MaxStamina = number
+            SprintingModule.Stamina = number
+        end
+    end
+})
+
+StaminaTab:Input({
+    Title = "输入体力恢复速度",
+    Desc = "输入",
+    Value = "20",
+    Callback = function(value)
+        local number = tonumber(value)
+        if number and SprintingModule then
+            SprintingModule.StaminaRecoveryRate = number
+        end
+    end
+})
+
+StaminaTab:Input({
+    Title = "输入体力消耗速度",
+    Desc = "输入",
+    Value = "20",
+    Callback = function(value)
+        local number = tonumber(value)
+        if number and SprintingModule then
+            SprintingModule.StaminaDepletionRate = number
+        end
+    end
+})
+StaminaTab:Divider()
+
+StaminaTab:Input({
+    Title = "输入奔跑速度",
+    Desc = "输入",
+    Value = "26",
+    Callback = function(value)
+        local number = tonumber(value)
+        if number then
+            local character = LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = number
+                end
+            end
+            if SprintingModule then
+                SprintingModule.SprintSpeed = number
+            end
+        end
+    end
+})
+
+local ESPTab = ESPSection:Tab({
+    Title = "透视",
+    Icon = "folder"
+})
+
+local ESPSettingsTab = ESPSection:Tab({
+    Title = "透视设置",
+    Icon = "folder"
+})
+
+local function CreateHighlight(parent, fillColor, outlineColor, name)
+    if not parent then return nil end
+    
+    local existingHighlight = parent:FindFirstChild(name)
+    if existingHighlight then
+        return existingHighlight
+    end
+    
+    local highlight = Instance.new("Highlight")
+    highlight.Name = name
+    highlight.FillColor = fillColor or Color3.fromRGB(255, 255, 255)
+    highlight.OutlineColor = outlineColor or Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = ESPSettings.FillTransparency
+    highlight.OutlineTransparency = ESPSettings.OutlineTransparency
+    highlight.Adornee = parent
+    highlight.Parent = parent
+    return highlight
+end
+
+local function RemoveHighlight(parent, name)
+    if not parent then return end
+    local highlight = parent:FindFirstChild(name)
+    if highlight then
+        highlight:Destroy()
+    end
+end
+
+local function UpdateFolderESP(folderPath, espName, enabled, fillColor, outlineColor)
+    local folder = nil
+    
+    if type(folderPath) == "string" then
+        folder = Workspace:FindFirstChild(folderPath)
+    else
+        folder = folderPath
+    end
+    
+    if not folder then return end
+    
+    for _, item in pairs(folder:GetChildren()) do
+        if enabled then
+            CreateHighlight(item, fillColor, outlineColor, espName)
+        else
+            RemoveHighlight(item, espName)
+        end
+    end
+    
+    if enabled then
+        folder.ChildAdded:Connect(function(child)
+            if enabled then
+                task.wait(0.1)
+                CreateHighlight(child, fillColor, outlineColor, espName)
+            end
+        end)
+    end
+end
+
+local function UpdateAllHighlightTransparency()
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("Highlight") then
+            obj.FillTransparency = ESPSettings.FillTransparency
+            obj.OutlineTransparency = ESPSettings.OutlineTransparency
+        end
+    end
+end
+
+ESPTab:Section({
+    Title = "物品透视",
+    Icon = "eye",
+    Desc = "透视",
+    ImageSize = 30,
+    Opened = true
+})
+
+ESPTab:Toggle({
+    Title = "透视可乐",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.ColaESP = value
+        
+        local items = Workspace:FindFirstChild("Items")
+        if items then
+            local colaFolder = items:FindFirstChild("Cola") or items:FindFirstChild("Colas")
+            if colaFolder then
+                for _, cola in pairs(colaFolder:GetChildren()) do
+                    if value then
+                        CreateHighlight(cola, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "ColaESP")
+                    else
+                        RemoveHighlight(cola, "ColaESP")
+                    end
+                end
+            end
+            
+            for _, item in pairs(items:GetDescendants()) do
+                if item.Name:lower():find("cola") or item.Name:lower():find("可乐") then
+                    if value then
+                        CreateHighlight(item, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "ColaESP")
+                    else
+                        RemoveHighlight(item, "ColaESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视医疗包",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.MedkitESP = value
+        
+        local items = Workspace:FindFirstChild("Items")
+        if items then
+            local medkitFolder = items:FindFirstChild("Medkit") or items:FindFirstChild("Medkits")
+            if medkitFolder then
+                for _, medkit in pairs(medkitFolder:GetChildren()) do
+                    if value then
+                        CreateHighlight(medkit, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "MedkitESP")
+                    else
+                        RemoveHighlight(medkit, "MedkitESP")
+                    end
+                end
+            end
+            
+            for _, item in pairs(items:GetDescendants()) do
+                if item.Name:lower():find("medkit") or item.Name:lower():find("医疗") or item.Name:lower():find("急救") then
+                    if value then
+                        CreateHighlight(item, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "MedkitESP")
+                    else
+                        RemoveHighlight(item, "MedkitESP")
+                    end
+                end
+            end
+        end
+    end
+    })
+
+ESPTab:Toggle({
+    Title = "透视披萨",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.PizzaESP = value
+        
+        local items = Workspace:FindFirstChild("Items")
+        if items then
+            local pizzaFolder = items:FindFirstChild("Pizza") or items:FindFirstChild("Pizzas")
+            if pizzaFolder then
+                for _, pizza in pairs(pizzaFolder:GetChildren()) do
+                    if value then
+                        CreateHighlight(pizza, Color3.fromRGB(255, 165, 0), Color3.fromRGB(255, 200, 100), "PizzaESP")
+                    else
+                        RemoveHighlight(pizza, "PizzaESP")
+                    end
+                end
+            end
+            
+            for _, item in pairs(items:GetDescendants()) do
+                if item.Name:lower():find("pizza") or item.Name:lower():find("披萨") then
+                    if value then
+                        CreateHighlight(item, Color3.fromRGB(255, 165, 0), Color3.fromRGB(255, 200, 100), "PizzaESP")
+                    else
+                        RemoveHighlight(item, "PizzaESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Section({
+    Title = "实体透视",
+    Icon = "eye",
+    Desc = "透视",
+    ImageSize = 30,
+    Opened = true
+})
+
+ESPTab:Toggle({
+    Title = "透视发电机",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.GeneratorESP = value
+        
+        local generators = Workspace:FindFirstChild("Generators") or Workspace:FindFirstChild("Generator")
+        if generators then
+            for _, generator in pairs(generators:GetChildren()) do
+                if value then
+                    CreateHighlight(generator, Color3.fromRGB(255, 255, 0), Color3.fromRGB(255, 255, 100), "GeneratorESP")
+                else
+                    RemoveHighlight(generator, "GeneratorESP")
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("generator") or obj.Name:lower():find("发电机") then
+                if obj:IsA("Model") or obj:IsA("BasePart") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(255, 255, 0), Color3.fromRGB(255, 255, 100), "GeneratorESP")
+                    else
+                        RemoveHighlight(obj, "GeneratorESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视假发电机",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.FakeGeneratorESP = value
+        
+        local fakeGenerators = Workspace:FindFirstChild("FakeGenerators") or Workspace:FindFirstChild("FakeGenerator")
+        if fakeGenerators then
+            for _, fakeGen in pairs(fakeGenerators:GetChildren()) do
+                if value then
+                    CreateHighlight(fakeGen, Color3.fromRGB(128, 128, 128), Color3.fromRGB(180, 180, 180), "FakeGeneratorESP")
+                else
+                    RemoveHighlight(fakeGen, "FakeGeneratorESP")
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("fake") and (obj.Name:lower():find("generator") or obj.Name:lower():find("发电机")) then
+                if obj:IsA("Model") or obj:IsA("BasePart") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(128, 128, 128), Color3.fromRGB(180, 180, 180), "FakeGeneratorESP")
+                    else
+                        RemoveHighlight(obj, "FakeGeneratorESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视幸存者",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.SurvivorESP = value
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                local character = player.Character
+                if character then
+                    if value then
+                        CreateHighlight(character, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "SurvivorESP")
+                    else
+                        RemoveHighlight(character, "SurvivorESP")
+                    end
+                end
+                
+                player.CharacterAdded:Connect(function(newCharacter)
+                    if ESPSettings.SurvivorESP then
+                        task.wait(0.5)
+                        CreateHighlight(newCharacter, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "SurvivorESP")
+                    end
+                end)
+            end
+        end
+        
+        Players.PlayerAdded:Connect(function(player)
+            if ESPSettings.SurvivorESP then
+                player.CharacterAdded:Connect(function(character)
+                    task.wait(0.5)
+                    CreateHighlight(character, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "SurvivorESP")
+                end)
+            end
+        end)
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视杀手",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.KillerESP = value
+        
+        local killers = Workspace:FindFirstChild("Killers") or Workspace:FindFirstChild("Killer")
+        if killers then
+            for _, killer in pairs(killers:GetChildren()) do
+                if value then
+                    CreateHighlight(killer, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "KillerESP")
+                else
+                    RemoveHighlight(killer, "KillerESP")
+                end
+            end
+        end
+        
+        local entities = Workspace:FindFirstChild("Entities")
+        if entities then
+            for _, entity in pairs(entities:GetChildren()) do
+                if entity.Name:lower():find("killer") or entity.Name:lower():find("杀手") then
+                    if value then
+                        CreateHighlight(entity, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "KillerESP")
+                                            else
+                        RemoveHighlight(entity, "KillerESP")
+                    end
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("killer") or obj.Name:lower():find("杀手") or obj.Name:lower():find("monster") then
+                if obj:IsA("Model") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "KillerESP")
+                    else
+                        RemoveHighlight(obj, "KillerESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视小孩分身",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.KidCloneESP = value
+        
+        local clones = Workspace:FindFirstChild("KidClones") or Workspace:FindFirstChild("KidClone")
+        if clones then
+            for _, clone in pairs(clones:GetChildren()) do
+                if value then
+                    CreateHighlight(clone, Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 255), "KidCloneESP")
+                else
+                    RemoveHighlight(clone, "KidCloneESP")
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:lower():find("kid") and obj.Name:lower():find("clone") then
+                if obj:IsA("Model") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(255, 0, 255), Color3.fromRGB(255, 100, 255), "KidCloneESP")
+                    else
+                        RemoveHighlight(obj, "KidCloneESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视1x1分身",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.OneByOneCloneESP = value
+        
+        local clones = Workspace:FindFirstChild("1x1Clones") or Workspace:FindFirstChild("1x1Clone")
+        if clones then
+            for _, clone in pairs(clones:GetChildren()) do
+                if value then
+                    CreateHighlight(clone, Color3.fromRGB(0, 255, 255), Color3.fromRGB(100, 255, 255), "1x1CloneESP")
+                else
+                    RemoveHighlight(clone, "1x1CloneESP")
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:find("1x1") and obj.Name:lower():find("clone") then
+                if obj:IsA("Model") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(0, 255, 255), Color3.fromRGB(100, 255, 255), "1x1CloneESP")
+                    else
+                        RemoveHighlight(obj, "1x1CloneESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPTab:Toggle({
+    Title = "透视007n7分身",
+    Desc = "透视",
+    Value = false,
+    Callback = function(value)
+        ESPSettings.Agent007CloneESP = value
+        
+        local clones = Workspace:FindFirstChild("007n7Clones") or Workspace:FindFirstChild("007n7Clone")
+        if clones then
+            for _, clone in pairs(clones:GetChildren()) do
+                if value then
+                    CreateHighlight(clone, Color3.fromRGB(0, 0, 255), Color3.fromRGB(100, 100, 255), "007n7CloneESP")
+                else
+                    RemoveHighlight(clone, "007n7CloneESP")
+                end
+            end
+        end
+        
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:find("007n7") and obj.Name:lower():find("clone") then
+                if obj:IsA("Model") then
+                    if value then
+                        CreateHighlight(obj, Color3.fromRGB(0, 0, 255), Color3.fromRGB(100, 100, 255), "007n7CloneESP")
+                    else
+                        RemoveHighlight(obj, "007n7CloneESP")
+                    end
+                end
+            end
+        end
+    end
+})
+
+ESPSettingsTab:Section({
+    Title = "透视设置",
+    Icon = "settings",
+    Desc = "设置",
+    ImageSize = 30,
+    Opened = true
+})
+
+ESPSettingsTab:Slider({
+    Title = "填充透明度",
+    Desc = "透明度",
+    Step = 0.01,
+    Value = {
+        Min = 0,
+        Max = 1,
+        Default = 0.5
+    },
+    Callback = function(value)
+        ESPSettings.FillTransparency = value
+        UpdateAllHighlightTransparency()
+    end
+})
+
+ESPSettingsTab:Slider({
+    Title = "轮廓透明度",
+    Desc = "透明度",
+    Step = 0.01,
+    Value = {
+        Min = 0,
+        Max = 1,
+        Default = 0
+    },
+    Callback = function(value)
+        ESPSettings.OutlineTransparency = value
+        UpdateAllHighlightTransparency()
+    end
+})
+
+local RepairTab = GeneratorSection:Tab({
+    Title = "修发电机",
+    Icon = "folder"
+})
+
+local TeleportRepairTab = GeneratorSection:Tab({
+    Title = "自动传送修机",
+    Icon = "folder"
+})
+
+RepairTab:Section({
+    Title = "自动修机",
+    Icon = "hand",
+        Desc = "修机",
+    ImageSize = 30,
+    Opened = true
+})
+
+local autoRepairConnection = nil
+
+RepairTab:Toggle({
+    Title = "自动修发电机",
+    Desc = "自动",
+    Value = false,
+    Callback = function(value)
+        AutoRepairSettings.Enabled = value
+        
+        if autoRepairConnection then
+            autoRepairConnection:Disconnect()
+            autoRepairConnection = nil
+        end
+        
+        if value then
+            autoRepairConnection = RunService.Heartbeat:Connect(function()
+                if not AutoRepairSettings.Enabled then
+                    if autoRepairConnection then
+                        autoRepairConnection:Disconnect()
+                        autoRepairConnection = nil
+                    end
+                    return
+                end
+                
+                local character = LocalPlayer.Character
+                if not character then return end
+                
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if not humanoidRootPart then return end
+                
+                local generators = Workspace:FindFirstChild("Generators")
+                if generators then
+                    for _, generator in pairs(generators:GetChildren()) do
+                        local primaryPart = generator.PrimaryPart or generator:FindFirstChild("HumanoidRootPart") or generator:FindFirstChildWhichIsA("BasePart")
+                        if primaryPart then
+                            local distance = (primaryPart.Position - humanoidRootPart.Position).Magnitude
+                            if distance < 15 then
+                                local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+                                if remotes then
+                                    local repairRemote = remotes:FindFirstChild("RepairGenerator") or remotes:FindFirstChild("Repair")
+                                    if repairRemote then
+                                        pcall(function()
+                                            repairRemote:FireServer(generator)
+                                        end)
+                                    end
+                                end
+                                
+                                local args = {generator}
+                                for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                                    if remote:IsA("RemoteEvent") and (remote.Name:lower():find("repair") or remote.Name:lower():find("generator")) then
+                                        pcall(function()
+                                            remote:FireServer(unpack(args))
+                                        end)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+                
+                task.wait(AutoRepairSettings.Interval)
+            end)
+        end
+    end
+})
+
+RepairTab:Input({
+    Title = "输入修机间隔",
+    Desc = "输入",
+    Value = "1",
+    Callback = function(value)
+        local number = tonumber(value)
+        if number and number > 0 then
+            AutoRepairSettings.Interval = number
+        end
+    end
+})
+
+TeleportRepairTab:Section({
+    Title = "传送修机",
+    Icon = "spline",
+    Desc = "修机",
+    ImageSize = 30,
+    Opened = true
+})
+
+local StatusParagraph = TeleportRepairTab:Paragraph({
+    Title = "修机状态: 空闲",
+    Icon = "info",
+    Desc = "状态",
+    ImageSize = 30,
+    Opened = true
+})
+
+TeleportRepairTab:Divider()
+
+local teleportRepairConnection = nil
+local isRepairing = false
+local currentGeneratorIndex = 1
+
+TeleportRepairTab:Toggle({
+    Title = "传送秒修电机",
+    Desc = "自动",
+    Value = false,
+    Callback = function(value)
+        AutoRepairSettings.TeleportRepair = value
+        
+        if teleportRepairConnection then
+            teleportRepairConnection:Disconnect()
+            teleportRepairConnection = nil
+        end
+        
+        if value then
+            teleportRepairConnection = RunService.Heartbeat:Connect(function()
+                if not AutoRepairSettings.TeleportRepair then
+                    if teleportRepairConnection then
+                        teleportRepairConnection:Disconnect()
+                        teleportRepairConnection = nil
+                    end
+                    if StatusParagraph and StatusParagraph.SetTitle then
+                        StatusParagraph:SetTitle("修机状态: 空闲")
+                    end
+                    return
+                end
+                
+                if isRepairing then return end
+                isRepairing = true
+                
+                local character = LocalPlayer.Character
+                if not character then 
+                    isRepairing = false
+                    return 
+                end
+                
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if not humanoidRootPart then 
+                    isRepairing = false
+                    return 
+                end
+                
+                local generators = Workspace:FindFirstChild("Generators")
+                if not generators then 
+                    isRepairing = false
+                    return 
+                end
+                
+                local generatorList = generators:GetChildren()
+                if #generatorList == 0 then 
+                    isRepairing = false
+                    return 
+                end
+                
+                for i, generator in ipairs(generatorList) do
+                    local isRepaired = generator:FindFirstChild("Repaired") or generator:FindFirstChild("IsRepaired") or generator:GetAttribute("Repaired")
+                    local repairedValue = false
+                    
+                    if isRepaired then
+                        if typeof(isRepaired) == "Instance" and isRepaired:IsA("BoolValue") then
+                            repairedValue = isRepaired.Value
+                        elseif typeof(isRepaired) == "boolean" then
+                            repairedValue = isRepaired
+                        end
+                                            end
+                    
+                    if not repairedValue then
+                        if StatusParagraph and StatusParagraph.SetTitle then
+                            StatusParagraph:SetTitle("修机状态: 正在传送到发电机 #" .. i)
+                        end
+                        
+                        local originalPosition = humanoidRootPart.CFrame
+                        
+                        local primaryPart = generator.PrimaryPart or generator:FindFirstChildWhichIsA("BasePart")
+                        if primaryPart then
+                            humanoidRootPart.CFrame = primaryPart.CFrame + Vector3.new(0, 3, 0)
+                        end
+                        
+                        task.wait(0.05)
+                        
+                        if StatusParagraph and StatusParagraph.SetTitle then
+                            StatusParagraph:SetTitle("修机状态: 正在修理发电机 #" .. i)
+                        end
+                        
+                        local remotes = ReplicatedStorage:FindFirstChild("Remotes")
+                        if remotes then
+                            local repairRemote = remotes:FindFirstChild("RepairGenerator") or remotes:FindFirstChild("Repair")
+                            if repairRemote then
+                                for j = 1, 100 do
+                                    pcall(function()
+                                        repairRemote:FireServer(generator)
+                                    end)
+                                end
+                            end
+                        end
+                        
+                        for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                            if remote:IsA("RemoteEvent") and (remote.Name:lower():find("repair") or remote.Name:lower():find("generator") or remote.Name:lower():find("progress")) then
+                                for j = 1, 50 do
+                                    pcall(function()
+                                        remote:FireServer(generator)
+                                        remote:FireServer(generator, 100)
+                                        remote:FireServer(generator, 1)
+                                    end)
+                                end
+                            end
+                        end
+                        
+                        task.wait(0.1)
+                        
+                        humanoidRootPart.CFrame = originalPosition
+                        
+                        if StatusParagraph and StatusParagraph.SetTitle then
+                            StatusParagraph:SetTitle("修机状态: 发电机 #" .. i .. " 已完成")
+                        end
+                        
+                        task.wait(0.5)
+                        break
+                    end
+                end
+                
+                local allRepaired = true
+                for _, generator in pairs(generatorList) do
+                    local isRepaired = generator:FindFirstChild("Repaired") or generator:FindFirstChild("IsRepaired") or generator:GetAttribute("Repaired")
+                    local repairedValue = false
+                    
+                    if isRepaired then
+                        if typeof(isRepaired) == "Instance" and isRepaired:IsA("BoolValue") then
+                            repairedValue = isRepaired.Value
+                        elseif typeof(isRepaired) == "boolean" then
+                            repairedValue = isRepaired
+                        end
+                    end
+                    
+                    if not repairedValue then
+                        allRepaired = false
+                        break
+                    end
+                end
+                
+                if allRepaired then
+                    if StatusParagraph and StatusParagraph.SetTitle then
+                        StatusParagraph:SetTitle("修机状态: 所有发电机已修理完成!")
+                    end
+                end
+                
+                isRepairing = false
+                task.wait(1)
+            end)
+        else
+            if StatusParagraph and StatusParagraph.SetTitle then
+                StatusParagraph:SetTitle("修机状态: 空闲")
+            end
+        end
+    end
+})
+
+task.spawn(function()
+    while task.wait(2) do
+        if ESPSettings.GeneratorESP then
+            local generators = Workspace:FindFirstChild("Generators")
+            if generators then
+                for _, generator in pairs(generators:GetChildren()) do
+                    if not generator:FindFirstChild("GeneratorESP") then
+                        CreateHighlight(generator, Color3.fromRGB(255, 255, 0), Color3.fromRGB(255, 255, 100), "GeneratorESP")
+                    end
+                end
+            end
+        end
+        
+        if ESPSettings.SurvivorESP then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    if not player.Character:FindFirstChild("SurvivorESP") then
+                        CreateHighlight(player.Character, Color3.fromRGB(0, 255, 0), Color3.fromRGB(100, 255, 100), "SurvivorESP")
+                    end
+                end
+            end
+        end
+        
+        if ESPSettings.KillerESP then
+            local killers = Workspace:FindFirstChild("Killers")
+            if killers then
+                for _, killer in pairs(killers:GetChildren()) do
+                    if not killer:FindFirstChild("KillerESP") then
+                        CreateHighlight(killer, Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 100, 100), "KillerESP")
+                    end
+                end
+            end
+        end
+    end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(character)
+    task.wait(1)
+    
+    if SprintingModule and SprintingModule.StaminaLossDisabled then
+        SprintingModule.Stamina = SprintingModule.MaxStamina or 100
+    end
+end)
+
+WindUI:Notify({
+    Title = "加载完成",
+    Content = "所有功能已加载完毕",
+    Duration = 3
+})
+
+print("=================================")
+print("BigWave Script Loaded Successfully")
+print("Created by 艾斯比")
+print("Game: 被遗弃")
+print("=================================")
+--傻逼深仇操是你妈妈哈哈哈叫爸爸来我操你妈死孩子我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈我操你妈
 
 TabHandles.MiscTab:Button({
     Title = "元素力量大亨脚本",
